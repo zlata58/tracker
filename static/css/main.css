@@ -1,0 +1,27 @@
+/* HEADER */
+header {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background: white;
+    -webkit-box-shadow: 0 5px 25px rgba(0, 0, 0, 0.15);
+        box-shadow: 0 5px 25 px rgba(0, 0, 0, 0.15);
+}
+.header__img {
+    height: 100px;
+    width: 300px;
+}
+
+.list-group-item {
+    transition: all 0.3s ease;
+    margin-bottom: 0.5rem;
+}
+
+.list-group-item:hover {
+    background-color: #d4edda !important;
+    transform: translateX(5px);
+}
+
+.fixed-bottom {
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+}
