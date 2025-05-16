@@ -13,7 +13,7 @@ app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
 db_session.global_init("db/blogs.db")
 
 db_path = Path('instance') / 'habits.db'
-db_path.parent.mkdir(exist_ok=True)  # Создаем папку instance если её нет
+db_path.parent.mkdir(exist_ok=True)
 conn = sqlite3.connect(db_path)
 cursor = conn.cursor()
 cursor.execute('''
@@ -75,7 +75,7 @@ def login():
         return render_template('register.html', title='Register', form=form)
     return redirect(url_for('homepage'))
 
-@app.route("/habittracker")
+@app.route("/notes")
 @app.route("/", methods=['GET', 'POST'])
 def homepage():
     if request.method == 'POST':
@@ -86,18 +86,16 @@ def homepage():
                 cursor = conn.cursor()
                 cursor.execute('INSERT INTO habits (name) VALUES (?)', (new_habit,))
                 conn.commit()
-                flash('Привычка успешно добавлена!', 'success')
+                flash('Запись успешно добавлена!', 'success')
             except Exception as e:
                 flash(f'Ошибка: {str(e)}', 'danger')
             return redirect(url_for('homepage'))
-
-    # Получаем все привычки для отображения
     habits = []
     try:
         conn = sqlite3.connect('instance/habits.db')
         cursor = conn.cursor()
-        cursor.execute('SELECT name FROM habits ORDER BY created_at DESC')
-        habits = [row[0] for row in cursor.fetchall()]
+        cursor.execute('SELECT id, name FROM habits ORDER BY created_at DESC')
+        habits = cursor.fetchall()
     except:
         habits = []
     return render_template("homepage.html", habits=habits)
@@ -105,6 +103,18 @@ def homepage():
 @app.route("/about")
 def about():
     return render_template("about.html")
+
+@app.route("/delete_habit/<int:habit_id>", methods=['POST'])
+def delete_habit(habit_id):
+    try:
+        conn = sqlite3.connect('instance/habits.db')
+        cursor = conn.cursor()
+        cursor.execute('DELETE FROM habits WHERE id = ?', (habit_id,))
+        conn.commit()
+        flash('Запись успешно удалена!', 'success')
+    except Exception as e:
+        flash(f'Ошибка при удалении записи: {str(e)}', 'danger')
+    return redirect(url_for('homepage'))
 
 @app.route('/logout')
 @login_required
